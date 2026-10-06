@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>London grad jobs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4F6F9; --surface:#FFFFFF; --ink:#16213D; --muted:#5E677A;
+  --rule:#D9DEE7; --marker:#FFE14D; --applied:#1F7A55; --saved:#2F4FC4; --danger:#B3261E;
+  --font:"Bricolage Grotesque", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.5 var(--font);font-variant-numeric:tabular-nums}
+a{color:inherit}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--saved);outline-offset:2px;border-radius:4px}
+.wrap{max-width:960px;margin:0 auto;padding:32px 20px 80px}
+
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:28px}
+h1{font-size:clamp(2.2rem,6vw,3.6rem);line-height:1;font-weight:800;letter-spacing:-.03em;margin:0}
+.sub{margin:10px 0 0;color:var(--muted)}
+.sub strong{color:var(--ink)}
+.top-actions{display:flex;gap:8px}
+
+.btn{border:1.5px solid var(--ink);background:var(--surface);border-radius:999px;padding:8px 16px;font-weight:500;cursor:pointer}
+.btn:hover{background:var(--ink);color:var(--paper)}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn.primary:hover{background:#25335c}
+.btn[disabled]{opacity:.55;cursor:progress}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:8px}
+.filters{display:flex;flex-wrap:wrap;gap:4px}
+.filter{border:0;background:none;padding:6px 12px;border-radius:999px;cursor:pointer;color:var(--muted);font-weight:500}
+.filter[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.filter .n{opacity:.7;margin-left:4px}
+.search{border:1.5px solid var(--rule);background:var(--surface);border-radius:999px;padding:8px 16px;min-width:220px;flex:0 1 280px}
+.linkish{border:0;background:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:4px 0}
+
+.jobs{list-style:none;margin:0;padding:0}
+.job{display:grid;grid-template-columns:1fr auto;gap:6px 20px;padding:18px 0;border-bottom:1px solid var(--rule)}
+.job-title{font-size:1.2rem;font-weight:700;line-height:1.3;text-decoration:none}
+.job-title:hover{text-decoration:underline}
+.job.is-new .job-title{
+  background:linear-gradient(100deg,transparent 0 .2em,var(--marker) .2em calc(100% - .3em),transparent calc(100% - .1em));
+  background-size:100% 62%;background-position:0 78%;background-repeat:no-repeat;
+  -webkit-box-decoration-break:clone;box-decoration-break:clone;padding:0 .15em;margin-left:-.15em}
+.meta{grid-column:1;color:var(--muted);font-size:.95rem}
+.meta b{color:var(--ink);font-weight:500}
+.tag{display:inline-block;font-size:.8rem;font-weight:500;padding:1px 8px;border-radius:999px;margin-left:6px;vertical-align:2px}
+.tag.saved{background:#E3E9FB;color:var(--saved)}
+.tag.applied{background:#DDF1E7;color:var(--applied)}
+.actions{grid-column:2;grid-row:1 / span 2;display:flex;gap:4px;align-items:center}
+.act{border:1px solid transparent;background:none;border-radius:999px;padding:6px 12px;cursor:pointer;color:var(--muted);font-size:.9rem}
+.act:hover{border-color:var(--rule);color:var(--ink);background:var(--surface)}
+.act.on{color:var(--ink);border-color:var(--ink)}
+.empty{padding:56px 0;color:var(--muted);font-size:1.1rem;max-width:52ch}
+.empty button{margin-top:16px}
+
+/* settings */
+.settings h2{font-size:1.5rem;letter-spacing:-.01em;margin:40px 0 4px}
+.settings h2:first-child{margin-top:0}
+.settings .hint{color:var(--muted);margin:0 0 16px;max-width:68ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+label{display:block;font-weight:500;margin-bottom:6px}
+label small{display:block;font-weight:400;color:var(--muted)}
+textarea,input[type=text],input[type=password],input[type=number],input[type=email]{
+  width:100%;border:1.5px solid var(--rule);background:var(--surface);border-radius:10px;padding:10px 12px}
+textarea{min-height:120px;resize:vertical;line-height:1.4}
+textarea:focus,input:focus{border-color:var(--ink);outline:none}
+.check{display:flex;gap:8px;align-items:center;font-weight:500}
+.save-bar{position:sticky;bottom:0;background:var(--paper);padding:16px 0;margin-top:32px;border-top:1px solid var(--rule);display:flex;gap:16px;align-items:center}
+.log{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:12px 16px;margin:0;font-size:.9rem;white-space:pre-wrap;color:var(--muted);max-height:260px;overflow:auto}
+.log .fail{color:var(--danger)}
+
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:999px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+[hidden]{display:none!important}
+
+@media (max-width:640px){
+  .job{grid-template-columns:1fr}
+  .actions{grid-column:1;grid-row:auto;margin-left:-12px}
+  .search{flex:1 1 100%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>London grad jobs</h1>
+      <p class="sub" id="summary">Loading…</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn primary" id="checkBtn">Check now</button>
+      <button class="btn" id="viewBtn">Settings</button>
+    </div>
+  </header>
+
+  <!-- JOBS VIEW -->
+  <section id="jobsView">
+    <div class="toolbar">
+      <div class="filters" role="group" aria-label="Show">
+        <button class="filter" data-f="new" aria-pressed="true">New<span class="n"></span></button>
+        <button class="filter" data-f="saved" aria-pressed="false">Saved<span class="n"></span></button>
+        <button class="filter" data-f="applied" aria-pressed="false">Applied<span class="n"></span></button>
+        <button class="filter" data-f="all" aria-pressed="false">All<span class="n"></span></button>
+        <button class="filter" data-f="hidden" aria-pressed="false">Hidden<span class="n"></span></button>
+      </div>
+      <input class="search" id="search" type="search" placeholder="Search roles or companies" aria-label="Search roles or companies">
+    </div>
+    <button class="linkish" id="markRead" hidden>Mark all new as read</button>
+    <ul class="jobs" id="jobs"></ul>
+    <div class="empty" id="empty" hidden></div>
+  </section>
+
+  <!-- SETTINGS VIEW -->
+  <section id="settingsView" class="settings" hidden>
+    <h2>Companies to watch</h2>
+    <p class="hint">One name per line. Find it in the company's job page address after you click a role or "Apply":
+      boards.greenhouse.io/<b>name</b>, jobs.lever.co/<b>name</b>, jobs.ashbyhq.com/<b>name</b>, jobs.smartrecruiters.com/<b>name</b>.</p>
+    <div class="grid">
+      <div><label for="greenhouse">Greenhouse</label><textarea id="greenhouse"></textarea></div>
+      <div><label for="lever">Lever</label><textarea id="lever"></textarea></div>
+      <div><label for="ashby">Ashby</label><textarea id="ashby"></textarea></div>
+      <div><label for="smartrecruiters">SmartRecruiters</label><textarea id="smartrecruiters"></textarea></div>
+    </div>
+    <div style="margin-top:16px">
+      <label for="jsonld_pages">Other careers pages<small>Full web addresses, one per line. Works when the page lists jobs in the standard format Google uses.</small></label>
+      <textarea id="jsonld_pages" style="min-height:90px"></textarea>
+    </div>
+
+    <h2>Job sites</h2>
+    <p class="hint">Free keys cover thousands of UK employers. Get them at developer.adzuna.com and reed.co.uk/developers.</p>
+    <div class="grid">
+      <div><label for="adzuna_app_id">Adzuna app ID</label><input type="text" id="adzuna_app_id" autocomplete="off"></div>
+      <div><label for="adzuna_app_key">Adzuna app key</label><input type="text" id="adzuna_app_key" autocomplete="off"></div>
+      <div><label for="reed_api_key">Reed API key</label><input type="text" id="reed_api_key" autocomplete="off"></div>
+    </div>
+    <div class="grid" style="margin-top:16px">
+      <div><label for="search_terms">Search for<small>One phrase per line</small></label><textarea id="search_terms" style="min-height:90px"></textarea></div>
+      <div><label for="search_location">Area</label><input type="text" id="search_location"></div>
+    </div>
+
+    <h2>What counts as a match</h2>
+    <p class="hint">A role matches when its title includes something from the first list, nothing from the second, and its location is in London.</p>
+    <div class="grid">
+      <div><label for="include">Title includes</label><textarea id="include"></textarea></div>
+      <div><label for="exclude">Title doesn't include</label><textarea id="exclude"></textarea></div>
+      <div><label for="locations">Location includes</label><textarea id="locations"></textarea></div>
+      <div><label for="location_exclude">Location doesn't include</label><textarea id="location_exclude"></textarea></div>
+    </div>
+
+    <h2>Checking and alerts</h2>
+    <p class="hint">Automatic checks run on the schedule set up when the app was deployed. Use "Check now" any time.</p>
+    <div>
+      <label class="check"><input type="checkbox" id="email_enabled"> Email me when new roles appear</label>
+    </div>
+    <div class="grid" style="margin-top:12px" id="emailFields">
+      <div><label for="email_to">Send alerts to<small>Separate several with commas</small></label><input type="text" id="email_to"></div>
+      <div><label for="email_username">Send from (Gmail address)</label><input type="email" id="email_username" autocomplete="off"></div>
+      <div><label for="email_password">Gmail app password<small id="pwHint">Not your normal password</small></label><input type="password" id="email_password" autocomplete="new-password"></div>
+      <div><label for="email_smtp_host">Mail server</label><input type="text" id="email_smtp_host"></div>
+      <div><label for="email_smtp_port">Port</label><input type="number" id="email_smtp_port"></div>
+    </div>
+
+    <h2>Last check</h2>
+    <p class="hint">Shows what each source returned. A failed company usually means the name is wrong or it uses a different job board.</p>
+    <pre class="log" id="log">No checks yet.</pre>
+
+    <div class="save-bar">
+      <button class="btn primary" id="saveBtn">Save settings</button>
+      <button class="btn" id="saveCheckBtn">Save and check now</button>
+    </div>
+  </section>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const LISTS = ["greenhouse","lever","ashby","smartrecruiters","jsonld_pages","search_terms","include","exclude","locations","location_exclude"];
+const TEXTS = ["adzuna_app_id","adzuna_app_key","reed_api_key","search_location"];
+let jobs = [], filter = "new", status = {}, checking = false;
+
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const safeUrl = u => /^https?:\/\//i.test(u || "") ? u : "#";
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2200); }
+async function api(path, body){
+  const r = await fetch(path, body===undefined ? {} : {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
+  if(!r.ok) throw new Error((await r.json().catch(()=>({}))).error || r.statusText);
+  return r.json();
+}
+function fmtDate(iso){
+  if(!iso) return "";
+  const d = new Date(iso.length===10 ? iso+"T12:00:00" : iso);
+  return isNaN(d) ? iso : d.toLocaleDateString("en-GB",{day:"numeric",month:"short"});
+}
+function fmtTime(iso){ const d=new Date(iso); return d.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}); }
+
+// ---------- jobs
+async function loadJobs(){ jobs = await api("/api/jobs"); render(); }
+
+function inFilter(j){
+  if(filter==="all") return j.status!=="hidden";
+  return j.status===filter;
+}
+function render(){
+  const q = $("#search").value.trim().toLowerCase();
+  const counts = {new:0,saved:0,applied:0,all:0,hidden:0};
+  jobs.forEach(j => { if(counts[j.status]!==undefined) counts[j.status]++; if(j.status!=="hidden") counts.all++; });
+  document.querySelectorAll(".filter").forEach(b => {
+    b.setAttribute("aria-pressed", b.dataset.f===filter);
+    b.querySelector(".n").textContent = counts[b.dataset.f] || "";
+  });
+  $("#markRead").hidden = !(filter==="new" && counts.new>0);
+
+  const list = jobs.filter(inFilter).filter(j => !q || (j.title+" "+j.company+" "+j.location).toLowerCase().includes(q));
+  $("#jobs").innerHTML = list.map(row).join("");
+  const empty = $("#empty");
+  empty.hidden = list.length>0;
+  if(!list.length) empty.innerHTML = emptyText(q, counts);
+  renderSummary(counts);
+}
+function row(j){
+  const tag = j.status==="saved" ? '<span class="tag saved">Saved</span>' : j.status==="applied" ? '<span class="tag applied">Applied</span>' : "";
+  const posted = j.posted ? ` · posted ${fmtDate(j.posted)}` : "";
+  const hide = j.status==="hidden"
+    ? `<button class="act" data-id="${j.id}" data-s="seen">Restore</button>`
+    : `<button class="act ${j.status==="saved"?"on":""}" data-id="${j.id}" data-s="${j.status==="saved"?"seen":"saved"}">${j.status==="saved"?"Unsave":"Save"}</button>
+       <button class="act ${j.status==="applied"?"on":""}" data-id="${j.id}" data-s="${j.status==="applied"?"saved":"applied"}">${j.status==="applied"?"Not applied":"Applied"}</button>
+       <button class="act" data-id="${j.id}" data-s="hidden">Hide</button>`;
+  return `<li class="job ${j.status==="new"?"is-new":""}">
+    <div><a class="job-title" href="${esc(safeUrl(j.url))}" target="_blank" rel="noopener" data-open="${j.id}">${esc(j.title)}</a>${tag}</div>
+    <div class="meta"><b>${esc(j.company)}</b> · ${esc(j.location || "Location not listed")}${posted} · via ${esc(j.source)}</div>
+    <div class="actions">${hide}</div>
+  </li>`;
+}
+function emptyText(q, counts){
+  if(q) return `Nothing matches “${esc(q)}”.`;
+  if(!jobs.length && !checking) return `No roles yet. Add companies or job-site keys in Settings, then check for roles.<br><button class="btn primary" onclick="showSettings()">Open settings</button>`;
+  if(filter==="new") return "You're all caught up.";
+  if(filter==="saved") return "Nothing saved yet. Save roles you want to come back to.";
+  if(filter==="applied") return "No applications marked yet. Mark a role as applied to track it here.";
+  if(filter==="hidden") return "No hidden roles.";
+  return "No roles yet.";
+}
+function renderSummary(counts){
+  let s;
+  if(checking || status.running) s = "Checking job boards… this can take a minute or two.";
+  else if(counts.new) s = `<strong>${counts.new} new role${counts.new>1?"s":""}</strong> waiting. Last checked ${status.last_run ? fmtTime(status.last_run) : "just now"}.`;
+  else if(status.last_run) s = `Nothing new since you last looked. Last checked ${fmtTime(status.last_run)}.`;
+  else s = "Graduate roles in London, as soon as they're posted.";
+  $("#summary").innerHTML = s;
+}
+
+$("#jobs").addEventListener("click", async e => {
+  const b = e.target.closest(".act");
+  if(b){
+    const id = +b.dataset.id, s = b.dataset.s;
+    await api(`/api/jobs/${id}/status`, {status:s});
+    jobs.find(j=>j.id===id).status = s;
+    render();
+    toast({saved:"Saved",applied:"Marked as applied",hidden:"Hidden",seen:s==="seen"?"Updated":""}[s] || "Updated");
+    return;
+  }
+  const a = e.target.closest("[data-open]");
+  if(a){
+    const j = jobs.find(x=>x.id===+a.dataset.open);
+    if(j && j.status==="new"){ j.status="seen"; api(`/api/jobs/${j.id}/status`,{status:"seen"}); setTimeout(render,300); }
+  }
+});
+document.querySelectorAll(".filter").forEach(b => b.addEventListener("click", () => { filter=b.dataset.f; render(); }));
+$("#search").addEventListener("input", render);
+$("#markRead").addEventListener("click", async () => { await api("/api/jobs/mark-read",{}); jobs.forEach(j=>{ if(j.status==="new") j.status="seen"; }); render(); toast("Marked all as read"); });
+
+// ---------- checking
+function showStatus(){
+  const busy = checking || status.running;
+  $("#checkBtn").disabled = busy;
+  $("#checkBtn").textContent = busy ? "Checking…" : "Check now";
+  const log = status.log && status.log.length ? status.log.map(l => l.includes("failed") ? `<span class="fail">${esc(l)}</span>` : esc(l)).join("\n") : "No checks yet.";
+  $("#log").innerHTML = log;
+}
+async function refreshStatus(){ status = await api("/api/status"); showStatus(); return status; }
+async function startCheck(){
+  if(checking) return;
+  checking = true; showStatus(); render();
+  try{
+    status = await api("/api/check", {});
+    await loadJobs();
+    toast(status.running ? "A check is already running. Try again shortly"
+      : status.last_new ? `${status.last_new} new role${status.last_new>1?"s":""} found` : "No new roles this time");
+  }catch(e){ toast("The check didn't finish. Try again"); }
+  checking = false; showStatus(); render();
+}
+$("#checkBtn").addEventListener("click", startCheck);
+
+// ---------- settings
+function showSettings(){ $("#jobsView").hidden=true; $("#settingsView").hidden=false; $("#viewBtn").textContent="Back to jobs"; loadSettings(); window.scrollTo(0,0); }
+function showJobs(){ $("#jobsView").hidden=false; $("#settingsView").hidden=true; $("#viewBtn").textContent="Settings"; }
+$("#viewBtn").addEventListener("click", () => $("#settingsView").hidden ? showSettings() : showJobs());
+
+async function loadSettings(){
+  const s = await api("/api/settings");
+  LISTS.forEach(k => $("#"+k).value = (s[k]||[]).join("\n"));
+  TEXTS.forEach(k => $("#"+k).value = s[k] ?? "");
+  const e = s.email;
+  $("#email_enabled").checked = !!e.enabled;
+  ["to","username","smtp_host","smtp_port"].forEach(k => $("#email_"+k).value = e[k] ?? "");
+  $("#email_password").value = "";
+  $("#email_password").placeholder = e.has_password ? "Saved. Leave blank to keep it" : "";
+  toggleEmail();
+}
+function toggleEmail(){ $("#emailFields").hidden = !$("#email_enabled").checked; }
+$("#email_enabled").addEventListener("change", toggleEmail);
+
+async function saveSettings(){
+  const body = {};
+  LISTS.forEach(k => body[k] = $("#"+k).value.split("\n"));
+  TEXTS.forEach(k => body[k] = $("#"+k).value);
+  body.email = {
+    enabled: $("#email_enabled").checked, to: $("#email_to").value, username: $("#email_username").value,
+    password: $("#email_password").value, smtp_host: $("#email_smtp_host").value, smtp_port: +$("#email_smtp_port").value || 587
+  };
+  await api("/api/settings", body);
+  toast("Settings saved");
+  loadSettings();
+}
+$("#saveBtn").addEventListener("click", saveSettings);
+$("#saveCheckBtn").addEventListener("click", async () => { await saveSettings(); startCheck(); });
+
+// ---------- start
+(async () => {
+  await refreshStatus();
+  await loadJobs();
+  setInterval(async () => { if(!checking){ await refreshStatus(); await loadJobs(); } }, 5*60000);
+})();
+</script>
+</body>
+</html>
