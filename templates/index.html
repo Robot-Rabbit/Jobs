@@ -73,6 +73,9 @@ textarea,input[type=text],input[type=password],input[type=number],input[type=ema
 textarea{min-height:120px;resize:vertical;line-height:1.4}
 textarea:focus,input:focus{border-color:var(--ink);outline:none}
 .check{display:flex;gap:8px;align-items:center;font-weight:500}
+details.advanced{margin-top:16px}
+details.advanced summary{cursor:pointer;color:var(--muted);font-weight:500;padding:6px 0}
+details.advanced[open] summary{margin-bottom:12px}
 .save-bar{position:sticky;bottom:0;background:var(--paper);padding:16px 0;margin-top:32px;border-top:1px solid var(--rule);display:flex;gap:16px;align-items:center}
 .log{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:12px 16px;margin:0;font-size:.9rem;white-space:pre-wrap;color:var(--muted);max-height:260px;overflow:auto}
 .log .fail{color:var(--danger)}
@@ -122,18 +125,22 @@ textarea:focus,input:focus{border-color:var(--ink);outline:none}
   <!-- SETTINGS VIEW -->
   <section id="settingsView" class="settings" hidden>
     <h2>Companies to watch</h2>
-    <p class="hint">One name per line. Find it in the company's job page address after you click a role or "Apply":
-      boards.greenhouse.io/<b>name</b>, jobs.lever.co/<b>name</b>, jobs.ashbyhq.com/<b>name</b>, jobs.smartrecruiters.com/<b>name</b>.</p>
-    <div class="grid">
-      <div><label for="greenhouse">Greenhouse</label><textarea id="greenhouse"></textarea></div>
-      <div><label for="lever">Lever</label><textarea id="lever"></textarea></div>
-      <div><label for="ashby">Ashby</label><textarea id="ashby"></textarea></div>
-      <div><label for="smartrecruiters">SmartRecruiters</label><textarea id="smartrecruiters"></textarea></div>
-    </div>
-    <div style="margin-top:16px">
-      <label for="jsonld_pages">Other careers pages<small>Full web addresses, one per line. Works when the page lists jobs in the standard format Google uses.</small></label>
-      <textarea id="jsonld_pages" style="min-height:90px"></textarea>
-    </div>
+    <p class="hint">Paste each company's careers link, one per line. Put the company's name first if you like, e.g. <b>PwC https://…</b>. The best link is the page that lists their jobs, often reached by clicking "Search jobs". The app works out which job system the company uses.</p>
+    <textarea id="watch_urls" style="min-height:200px" placeholder="Company name https://careers-link"></textarea>
+    <details class="advanced">
+      <summary>Advanced: job board names and Workday searches</summary>
+      <p class="hint">Older style, still works. One name per line, from addresses like boards.greenhouse.io/<b>name</b>, jobs.lever.co/<b>name</b>, jobs.ashbyhq.com/<b>name</b>, jobs.smartrecruiters.com/<b>name</b>.</p>
+      <div class="grid">
+        <div><label for="greenhouse">Greenhouse</label><textarea id="greenhouse"></textarea></div>
+        <div><label for="lever">Lever</label><textarea id="lever"></textarea></div>
+        <div><label for="ashby">Ashby</label><textarea id="ashby"></textarea></div>
+        <div><label for="smartrecruiters">SmartRecruiters</label><textarea id="smartrecruiters"></textarea></div>
+      </div>
+      <div class="grid" style="margin-top:16px">
+        <div><label for="jsonld_pages">Other careers pages</label><textarea id="jsonld_pages" style="min-height:90px"></textarea></div>
+        <div><label for="workday_terms">Workday sites: search for<small>Big employers list thousands of jobs, so the app searches these words on each Workday site</small></label><textarea id="workday_terms" style="min-height:90px"></textarea></div>
+      </div>
+    </details>
 
     <h2>Job sites</h2>
     <p class="hint">Free keys cover thousands of UK employers. Get them at developer.adzuna.com and reed.co.uk/developers.</p>
@@ -142,16 +149,21 @@ textarea:focus,input:focus{border-color:var(--ink);outline:none}
       <div><label for="adzuna_app_key">Adzuna app key</label><input type="text" id="adzuna_app_key" autocomplete="off"></div>
       <div><label for="reed_api_key">Reed API key</label><input type="text" id="reed_api_key" autocomplete="off"></div>
     </div>
+    <div style="margin-top:16px;display:grid;gap:8px">
+      <label class="check"><input type="checkbox" id="reed_direct_only"> Reed: only jobs posted by the employer (skip recruitment agencies)</label>
+      <label class="check"><input type="checkbox" id="reed_graduate_only"> Reed: only jobs tagged as graduate roles</label>
+    </div>
     <div class="grid" style="margin-top:16px">
       <div><label for="search_terms">Search for<small>One phrase per line</small></label><textarea id="search_terms" style="min-height:90px"></textarea></div>
       <div><label for="search_location">Area</label><input type="text" id="search_location"></div>
     </div>
 
     <h2>What counts as a match</h2>
-    <p class="hint">A role matches when its title includes something from the first list, nothing from the second, and its location is in London.</p>
+    <p class="hint">A role matches when its title has a level word (like graduate or junior), a field word (like marketing or data), none of the blocked words, and a London location.</p>
     <div class="grid">
-      <div><label for="include">Title includes</label><textarea id="include"></textarea></div>
-      <div><label for="exclude">Title doesn't include</label><textarea id="exclude"></textarea></div>
+      <div><label for="include">Level words</label><textarea id="include"></textarea></div>
+      <div><label for="fields">Field words<small>Leave empty for any field</small></label><textarea id="fields"></textarea></div>
+      <div><label for="exclude">Blocked words</label><textarea id="exclude"></textarea></div>
       <div><label for="locations">Location includes</label><textarea id="locations"></textarea></div>
       <div><label for="location_exclude">Location doesn't include</label><textarea id="location_exclude"></textarea></div>
     </div>
@@ -183,7 +195,8 @@ textarea:focus,input:focus{border-color:var(--ink);outline:none}
 
 <script>
 const $ = s => document.querySelector(s);
-const LISTS = ["greenhouse","lever","ashby","smartrecruiters","jsonld_pages","search_terms","include","exclude","locations","location_exclude"];
+const LISTS = ["watch_urls","greenhouse","lever","ashby","smartrecruiters","jsonld_pages","workday_terms","search_terms","include","fields","exclude","locations","location_exclude"];
+const BOOLS = ["reed_direct_only","reed_graduate_only"];
 const TEXTS = ["adzuna_app_id","adzuna_app_key","reed_api_key","search_location"];
 let jobs = [], filter = "new", status = {}, checking = false;
 
@@ -242,7 +255,7 @@ function row(j){
 }
 function emptyText(q, counts){
   if(q) return `Nothing matches “${esc(q)}”.`;
-  if(!jobs.length && !checking) return `No roles yet. Add companies or job-site keys in Settings, then check for roles.<br><button class="btn primary" onclick="showSettings()">Open settings</button>`;
+  if(!jobs.length && !checking) return `No roles yet. Add careers links or job-site keys in Settings, then check for roles.<br><button class="btn primary" onclick="showSettings()">Open settings</button>`;
   if(filter==="new") return "You're all caught up.";
   if(filter==="saved") return "Nothing saved yet. Save roles you want to come back to.";
   if(filter==="applied") return "No applications marked yet. Mark a role as applied to track it here.";
@@ -309,6 +322,7 @@ async function loadSettings(){
   const s = await api("/api/settings");
   LISTS.forEach(k => $("#"+k).value = (s[k]||[]).join("\n"));
   TEXTS.forEach(k => $("#"+k).value = s[k] ?? "");
+  BOOLS.forEach(k => $("#"+k).checked = !!s[k]);
   const e = s.email;
   $("#email_enabled").checked = !!e.enabled;
   ["to","username","smtp_host","smtp_port"].forEach(k => $("#email_"+k).value = e[k] ?? "");
@@ -323,6 +337,7 @@ async function saveSettings(){
   const body = {};
   LISTS.forEach(k => body[k] = $("#"+k).value.split("\n"));
   TEXTS.forEach(k => body[k] = $("#"+k).value);
+  BOOLS.forEach(k => body[k] = $("#"+k).checked);
   body.email = {
     enabled: $("#email_enabled").checked, to: $("#email_to").value, username: $("#email_username").value,
     password: $("#email_password").value, smtp_host: $("#email_smtp_host").value, smtp_port: +$("#email_smtp_port").value || 587

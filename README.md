@@ -60,8 +60,15 @@ often it checks, edit the `cron:` line in `.github/workflows/check-jobs.yml`.
 
 - A check has about 4 minutes before it stops (Vercel's limit is 5). The
   "Last check" box in Settings says if any companies were skipped for time.
-- Add companies by the name in their job page address:
-  boards.greenhouse.io/**name**, jobs.lever.co/**name**,
-  jobs.ashbyhq.com/**name**, jobs.smartrecruiters.com/**name**.
+- Add companies under **Companies to watch** by pasting their careers link,
+  one per line, optionally with the name first (`PwC https://...`). The app
+  recognises Workday, Greenhouse, Lever, Ashby and SmartRecruiters links, and
+  for other careers pages it reads the job data on the page or follows a link
+  to one of those systems. The "Last check" box says what it found.
+- Workday sites are read through the same data feed the careers page itself
+  loads. It's not an official public API, so a company could change it; if one
+  starts failing in "Last check", that's the likely reason.
+- Matches need a level word (graduate, junior...), a field word (marketing,
+  data...), no blocked words, and a London location. All editable in Settings.
 - Email alerts: Settings → tick the box. For Gmail, use an App Password
   (Google Account → Security → App passwords), not the normal password.

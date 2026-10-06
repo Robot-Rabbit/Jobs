@@ -32,8 +32,10 @@ APP_PASSWORD = os.environ.get("APP_PASSWORD", "")
 CRON_SECRET = os.environ.get("CRON_SECRET", "")
 
 STATUSES = {"new", "seen", "saved", "applied", "hidden"}
-LIST_KEYS = ["greenhouse", "lever", "ashby", "smartrecruiters", "jsonld_pages",
-             "search_terms", "include", "exclude", "locations", "location_exclude"]
+LIST_KEYS = ["watch_urls", "greenhouse", "lever", "ashby", "smartrecruiters", "jsonld_pages",
+             "workday_terms", "search_terms", "include", "fields", "exclude",
+             "locations", "location_exclude"]
+BOOL_KEYS = ["reed_direct_only", "reed_graduate_only"]
 
 app = Flask(__name__)
 _db_ready = False
@@ -67,7 +69,7 @@ def kv_set(con, name, value):
 
 def load_settings(con):
     s = copy.deepcopy(scanner.DEFAULT_SETTINGS)
-    saved = kv_get(con, "settings", {})
+    saved = scanner.upgrade_settings(kv_get(con, "settings", {}))
     email = {**s["email"], **saved.pop("email", {})}
     s.update(saved)
     s["email"] = email
@@ -229,6 +231,9 @@ def api_save_settings():
         for k in LIST_KEYS:
             if k in incoming:
                 s[k] = [x.strip() for x in incoming[k] if str(x).strip()]
+        for k in BOOL_KEYS:
+            if k in incoming:
+                s[k] = bool(incoming[k])
         for k in ["adzuna_app_id", "adzuna_app_key", "reed_api_key", "search_location"]:
             if k in incoming:
                 s[k] = str(incoming[k]).strip()
