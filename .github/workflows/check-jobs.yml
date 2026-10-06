@@ -1,1 +1,20 @@
+# Hourly checks for free. Vercel's free (Hobby) plan only allows one scheduled
+# run a day, so GitHub calls the app's check endpoint every hour instead.
+# Needs two repository secrets: APP_URL and CRON_SECRET (see README).
+name: Check for new grad jobs
 
+on:
+  schedule:
+    - cron: "7 * * * *"      # 7 minutes past every hour (UTC)
+  workflow_dispatch:          # adds a "Run workflow" button for testing
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Ask the app to check job boards
+        run: |
+          curl --fail --silent --show-error --max-time 320 \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/cron"
